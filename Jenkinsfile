@@ -19,12 +19,9 @@ pipeline{
             steps{
                script {
                 commitHash = sh (script : "git log -n 1 --pretty=format:'%H'", returnStdout: true)
-                docker.withRegistry('', 'dockerHub') {
-                    def dockerfile = 'dockerfile'
-                    def dockerpath = "./frontend2"
-                    def customImage = docker.build("frontend:latest", "-f ${dockerfile} https://github.com/fitraelbi/cashier-restaurant-app-vue.git")
-                    customImage.push()
-                }
+                def customImage = docker.build("frontend:latest", "-f ${dockerfile} https://github.com/fitraelbi/cashier-restaurant-app-vue.git")
+                customImage.push()
+        
                }
             }
         }
