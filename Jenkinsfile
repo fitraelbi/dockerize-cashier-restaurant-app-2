@@ -1,23 +1,20 @@
-pipeline{
+pipeline {
     agent any
-    parameters {
-        booleanParam(name: 'RUNTEST', defaultValue: true, description: 'Toggle this value for testing')
-        choice(name: CICD, choices: ['CI', 'CICD'], description: 'Pick something')
-    }
-    stages{
-        stage('Build Project'){
-            step{
-                echo 'build....'
+
+    stages {
+        stage('Build') {
+            steps {
+                echo 'Building..'
             }
         }
-        stage('Run Testing'){
-            step{
-                echo 'Testing....'
+        stage('Test') {
+            steps {
+                echo 'Testing..'
             }
         }
-        stage('Deploy'){
-            step{
-                echo 'DEploy....'
+        stage('Deploy') {
+            steps {
+                echo 'Deploying....'
             }
         }
     }
