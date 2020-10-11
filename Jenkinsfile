@@ -2,22 +2,44 @@ pipeline{
     agent any
     parameters {
         booleanParam(name: 'RUNTEST', defaultValue: true, description: 'Toggle this value for testing')
-        choice(name: 'CICD', choices: ['CI', 'CICD'], description: 'Pick something')
+        choice(name: 'DEV/PRODUCTION', choices: ['DEVELOP', 'PRODUCTION'], description: 'Choose Server')
     }
     stages{
         stage('Build Project'){
             steps{
-                echo 'build....'
+                nodejs('node12') {
+                    sh 'yarn install'
+                }
+            }
+        }
+        stage('Build Docker Image'){
+            steps{
+                commitHash = sh (script : "git log -n 1 --pretty=format:'%H'", returnStdout: true)
+                docker.withRegistry('https://registry.hub.docker.com', 'dockerHub') {
+                    def dockerfile = 'dockerfile'
+                    def customImage = docker.build("frontend:${env.BUILD_ID}", "-f ${dockerfile} ./frontend")
+                    customImage.push()
+                }
+            }
+        }
+        stage('Remove Image'){
+            steps{
+                echo 'Remove....'
             }
         }
         stage('Run Testing'){
+            when {
+                expression {
+                    params.RUNTEST
+                }
+            }
             steps{
                 echo 'Testing....'
             }
         }
         stage('Deploy'){
             steps{
-                echo 'DEploy....'
+                echo 'Deploy....'
             }
         }
     }
