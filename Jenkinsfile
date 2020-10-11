@@ -21,7 +21,7 @@ pipeline{
                 commitHash = sh (script : "git log -n 1 --pretty=format:'%H'", returnStdout: true)
                 docker.withRegistry('https://registry.hub.docker.com', registryCredential) {
                     def dockerfile = 'dockerfile'
-                    def customImage = docker.build("frontend:${env.BUILD_ID}", "-f ${dockerfile} ./frontend2 @ 34a0bbd/")
+                    def customImage = docker.build("frontend:latest", "-f ${dockerfile} ./frontend2 @ 34a0bbd")
                     customImage.push()
                 }
                }
