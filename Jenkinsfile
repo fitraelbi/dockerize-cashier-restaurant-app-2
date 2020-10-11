@@ -22,7 +22,7 @@ pipeline{
                 docker.withRegistry('https://registry.hub.docker.com', registryCredential) {
                     def dockerfile = 'dockerfile'
                     def dockerpath = "./frontend2"
-                    def customImage = docker.build("frontend:latest", "-f ${dockerfile} ${dockerpath}")
+                    def customImage = docker.build("frontend:latest", "-f ${dockerfile} https://github.com/fitraelbi/cashier-restaurant-app-vue.git")
                     customImage.push()
                 }
                }
