@@ -4,7 +4,7 @@ pipeline{
         booleanParam(name: 'RUNTEST', defaultValue: true, description: 'Toggle this value for testing')
         choice(name: 'DEV/PRODUCTION', choices: ['DEVELOP', 'PRODUCTION'], description: 'Choose Server')
     }
-    environtment {
+    environment {
         registryCredential = 'dockerHub'
     }
     stages{
