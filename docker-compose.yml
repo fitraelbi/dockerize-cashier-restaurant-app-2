@@ -1,0 +1,101 @@
+version: '3.7'
+services:
+  redis:
+    image: "redis:alpine"
+    ports:
+      - "6379:6379"
+    volumes:
+      - ./redis-data:/var/lib/redis
+      - ./redis.conf:/usr/local/etc/redis/redis.conf
+    environment:
+      - REDIS_REPLICATION_MODE=master
+    networks:
+      - samplenet
+
+  db:
+    image: "postgres:12.4"
+    expose:
+      - 5433
+    ports:
+      - "5433:5432"
+    volumes:
+      - ./pgdata:/var/lib/postgresql/data
+    networks:
+      - samplenet
+    environment:
+      POSTGRES_USER: mydb
+      POSTGRES_PASSWORD: 12341234
+      POSTGRES_DB: cashier-restaurant
+
+  nodejs:
+    image: "backend"
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
+      - redis
+    networks:
+      - samplenet
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 200M
+        reservations:
+          cpus: '0.0001'
+          memory: 20M
+    environment:
+      ACCESS_TOKEN_SECRET: 0d1afdb986e6ea2dba64dec53697bd0757380f47442e2f85d0139e58eb035567
+      REFRESH_TOKEN_SECRET: 7afb273497b3750a8a1e27c54101092b7dca88cc112b20326e59258b99abbdc0
+      DB_PASSWORD: 12341234
+      DB_USER: mydb
+      DB_HOST: db
+      DB_NAME: cashier-restaurant
+      PORT_REDIS: 6379
+      HOST_REDIS: redis
+      PORT: 3000
+
+  nodejs2:
+    image: "backend"
+    ports:
+      - "3001:3000"
+    depends_on:
+      - db
+      - redis
+    networks:
+      - samplenet
+    environment:
+      ACCESS_TOKEN_SECRET: 0d1afdb986e6ea2dba64dec53697bd0757380f47442e2f85d0139e58eb035567
+      REFRESH_TOKEN_SECRET: 7afb273497b3750a8a1e27c54101092b7dca88cc112b20326e59258b99abbdc0
+      DB_PASSWORD: 12341234
+      DB_USER: mydb
+      DB_HOST: db
+      DB_NAME: cashier-restaurant
+      PORT_REDIS: 6379
+      HOST_REDIS: redis
+      PORT: 3000
+
+  my-app:
+    container_name: my-app
+    image: "frontend"
+    ports:
+      - '80:80'
+    links:
+      - nodejs:nodejs
+      - nodejs2:nodejs2
+    environment:
+      VUE_APP_AUTH: http://3.80.30.173/api/auth/login
+      VUE_APP_AUTH: http://3.80.30.173/api/auth/login
+      VUE_APP_REGISTER: http://3.80.30.173/api/user/register
+      VUE_APP_HISTORY: http://3.80.30.173/api/history
+      VUE_APP_SEARCH: http://3.80.30.173/api/product/search
+      VUE_APP_URL: http://3.80.30.173/api/product
+      VUE_APP_PRODUCT_ORDERBYNAME: http://3.80.30.173/api/product/orderbyname
+      VUE_APP_PRODUCT_ORDERBYCATEGORY: http://3.80.30.173/api/product/orderbycategory
+      VUE_APP_PRODUCT_ORDERBYPRICEL: http://3.80.30.173/api/orderbyprice
+      VUE_APP_PRODUCT_ORDERBYNEW: http://3.80.30.173/api/product/orderbynew
+    networks:
+      - samplenet
+
+networks:
+    samplenet:
