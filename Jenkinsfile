@@ -6,6 +6,7 @@ pipeline{
     }
     environment {
         registry = "fitrakz/frontend"
+        registry_backend = "fitrakz/frontend"
         registryCredential = 'dockerHub'
     }
     stages{
@@ -18,11 +19,13 @@ pipeline{
         }
         stage('Build Docker Image'){
             steps{
-               script {
+               script {             
                  def dockerfile = 'dockerfile'
                 docker.withRegistry('', registryCredential) {
                     def app = docker.build(registry, "-f ${dockerfile} https://github.com/fitraelbi/cashier-restaurant-app-vue.git")
                     app.push("latest")
+                    def backend = docker.build(registry_backend, "-f ${dockerfile} https://github.com/fitraelbi/cashier-restaurant-app-nodejs3.git")
+                    backend.push("latest")
                   }
                }
             }
@@ -31,6 +34,7 @@ pipeline{
             steps{
                 echo 'Remove....'
                 sh "docker rmi ${registry}:latest"
+                sh "docker rmi ${registry_backend}:latest"
             }
         }
         stage('Run Testing'){
@@ -53,7 +57,7 @@ pipeline{
                                 verbose: false,
                                 transfers: [
                                     sshTransfer(
-                                        execCommand: 'docker pull fitrakz/frontend:latest; docker kill frontend; docker run -d --rm --name frontend -p 8080:80 fitrakz/frontend:latest; wget https://raw.githubusercontent.com/fitraelbi/dockerize-cashier-restaurant-app-2/main/docker-compose.yml;',
+                                        execCommand: 'docker pull fitrakz/frontend:latest;  docker pull fitrakz/backend:latest;',
                                         execTimeout: 120000,
                                     )
                                 ]
