@@ -21,8 +21,9 @@ pipeline{
                 commitHash = sh (script : "git log -n 1 --pretty=format:'%H'", returnStdout: true)
                 def dockerfile = 'dockerfile'
                 docker.withRegistry('', registryCredential) {
-                    def customImage = docker.build("frontend", "-f ${dockerfile} https://github.com/fitraelbi/cashier-restaurant-app-vue.git")
-                    customImage.push()
+                    def app = docker.build("frontend", "-f ${dockerfile} https://github.com/fitraelbi/cashier-restaurant-app-vue.git")
+                    app.push("${env.BUILD_NUMBER}")
+                    app.push("latest")
                   }
                }
             }
