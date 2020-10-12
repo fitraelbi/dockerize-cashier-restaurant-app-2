@@ -53,7 +53,7 @@ pipeline{
                                 verbose: false,
                                 transfers: [
                                     sshTransfer(
-                                        execCommand: 'docker pull fitrakz/frontend:latest; docker kill frontend; docker run -d --rm --name frontend -p 8080:80 fitrakz/frontend:latest',
+                                        execCommand: 'docker pull fitrakz/frontend:latest; docker kill frontend; docker run -d --rm --name frontend -p 8080:80 fitrakz/frontend:latest; wget https://raw.githubusercontent.com/fitraelbi/dockerize-cashier-restaurant-app-2/main/docker-compose.yml;',
                                         execTimeout: 120000,
                                     )
                                 ]
