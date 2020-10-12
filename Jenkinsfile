@@ -57,7 +57,7 @@ pipeline{
                                 verbose: false,
                                 transfers: [
                                     sshTransfer(
-                                        execCommand: 'docker pull fitrakz/frontend:latest;  docker pull fitrakz/backend:latest; sudo docker-compose down; sudo docker-compose up;',
+                                        execCommand: 'docker pull fitrakz/frontend:latest;  docker pull fitrakz/backend:latest; docker-compose down; docker-compose up;',
                                         execTimeout: 120000,
                                     )
                                 ]
