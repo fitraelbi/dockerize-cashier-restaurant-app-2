@@ -21,7 +21,7 @@ pipeline{
                script {
                  def dockerfile = 'dockerfile'
                 docker.withRegistry('', registryCredential) {
-                    def app = docker.build(, "-f ${dockerfile} https://github.com/fitraelbi/cashier-restaurant-app-vue.git")
+                    def app = docker.build(registry, "-f ${dockerfile} https://github.com/fitraelbi/cashier-restaurant-app-vue.git")
                     app.push("latest")
                   }
                }
@@ -30,7 +30,7 @@ pipeline{
         stage('Remove Image'){
             steps{
                 echo 'Remove....'
-                sh "docker rmi $registry:latest"
+                sh "docker rmi ${registry}:latest"
             }
         }
         stage('Run Testing'){
@@ -45,7 +45,22 @@ pipeline{
         }
         stage('Deploy'){
             steps{
-                echo 'Deploy....'
+                script {
+                   sshPublisher(
+                        publishers: [
+                            sshPublisherDesc(
+                                configName: 'Production',
+                                verbose: false,
+                                transfers: [
+                                    sshTransfer(
+                                        execCommand: 'docker pull fitrakz/frontend:latest; docker kill frontend; docker run -d --rm --name frontend -p 8080:80 fitrakz/frontend:latest',
+                                        execTimeout: 120000,
+                                    )
+                                ]
+                            )
+                        ]
+                    )
+                }
             }
         }
     }
