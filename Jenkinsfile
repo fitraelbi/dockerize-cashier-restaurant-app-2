@@ -5,6 +5,7 @@ pipeline{
         choice(name: 'DEV/PRODUCTION', choices: ['DEVELOP', 'PRODUCTION'], description: 'Choose Server')
     }
     environment {
+        registry = "fitrakz/frontend"
         registryCredential = 'dockerHub'
     }
     stages{
@@ -18,19 +19,18 @@ pipeline{
         stage('Build Docker Image'){
             steps{
                script {
-                commitHash = sh (script : "git log -n 1 --pretty=format:'%H'", returnStdout: true)
-                docker.withRegistry('https://registry.hub.docker.com', registryCredential) {
-                    def dockerfile = 'dockerfile'
-                    def dockerpath = "./frontend2"
-                    def customImage = docker.build("frontend:latest", "-f ${dockerfile} https://github.com/fitraelbi/cashier-restaurant-app-vue.git")
-                    customImage.push()
-                }
+                 def dockerfile = 'dockerfile'
+                docker.withRegistry('', registryCredential) {
+                    def app = docker.build(, "-f ${dockerfile} https://github.com/fitraelbi/cashier-restaurant-app-vue.git")
+                    app.push("latest")
+                  }
                }
             }
         }
         stage('Remove Image'){
             steps{
                 echo 'Remove....'
+                sh "docker rmi $registry:latest"
             }
         }
         stage('Run Testing'){

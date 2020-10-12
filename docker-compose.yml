@@ -82,7 +82,7 @@ services:
       - '80:80'
     links:
       - nodejs:nodejs
-      - nodejs2:nodejs2
+      - nodejs2:nodejs2git
     environment:
       VUE_APP_AUTH: http://3.80.30.173/api/auth/login
       VUE_APP_AUTH: http://3.80.30.173/api/auth/login
