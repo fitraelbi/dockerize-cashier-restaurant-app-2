@@ -57,7 +57,7 @@ pipeline{
                                 verbose: false,
                                 transfers: [
                                     sshTransfer(
-                                        execCommand: 'docker rmi fitrakz/frontend:latest; docker rmi fitrakz/backend:latest; docker pull fitrakz/frontend:latest;  docker pull fitrakz/backend:latest; docker-compose down -v -f;  docker-compose up --build -d;',
+                                        execCommand: 'docker rmi fitrakz/frontend:latest; docker rmi fitrakz/backend:latest; docker pull fitrakz/frontend:latest;  docker pull fitrakz/backend:latest; docker-compose down -v -f;  docker-compose up --renew-anon-volumes;',
                                         execTimeout: 120000,
                                     )
                                 ]
